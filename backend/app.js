@@ -8,6 +8,8 @@ const cors=require('cors');
 const cookieParser = require('cookie-parser');
 const PORT=process.env.PORT || 5000;
 const connectDB=require('./config/db');
+const auth=require('./middleware/authMiddleware');
+const authRoutes=require('./routes/authRoutes');
 
 connectDB();
 
@@ -21,11 +23,19 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,'public')));
 
+app.use("/api/auth",authRoutes);
 
 app.get('/',(req,res)=>{
     res.send("CivicAI is running successfully");
 
 })
+
+app.get("/test", auth, (req,res)=>{
+    return res.json({
+        success:true,
+        user:req.user
+    });
+});
 
 app.listen(PORT,()=>{
     console.log(`Server is running on ${PORT}`);
