@@ -10,11 +10,14 @@ const PORT=process.env.PORT || 5000;
 const connectDB=require('./config/db');
 const auth=require('./middleware/authMiddleware');
 const authRoutes=require('./routes/authRoutes');
+const issueRoutes=require('./routes/issueRoutes');
+const { analyzeIssue } = require("./services/geminiService");
+const dashboardRoutes=require('./routes/dashboardRoutes')
 
 connectDB();
 
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"],
     credentials:true
 }));
 
@@ -23,8 +26,35 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,'public')));
 
+app.use('/api/dashboard',dashboardRoutes);
+
 app.use("/api/auth",authRoutes);
 
+app.use("/api/issues",issueRoutes);
+
+
+
+app.get("/test-gemini", async(req,res)=>{
+
+    try{
+
+        const result = await analyzeIssue(
+    "Huge pothole causing accidents on highway"
+);
+
+res.json(result);
+
+        // res.send(result);
+
+    }catch(err){
+
+        console.log(err);
+
+        res.status(500).send("Gemini Error");
+
+    }
+
+});
 app.get('/',(req,res)=>{
     res.send("CivicAI is running successfully");
 

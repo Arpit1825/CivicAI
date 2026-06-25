@@ -2,20 +2,28 @@ const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 const User=require('../models/User');
-
+const ADMIN_PRIVATE_KEY=process.env.ADMIN_PRIVATE_KEY;
 const signup= async (req,res)=>{
-const {name,email,password,role,adminSecretKey}=req.body;
+const {name,email,password,role,adminSecretkey}=req.body;
 try{
     const user=await User.findOne({email})
 
 if(user){
-   return res.status(409).json({
-    success:false,
-    message:"User already exists"
-   });
+   return res.status(200).json({
+    success: true,
+    message: "Login successful",
+    user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+    }
+});
 }
-if(role==="Admin"){
-   if(adminSecretKey !== process.env.ADMIN_SECRET_KEY){
+console.log("Received Key:", adminSecretkey);
+console.log("Env Key:", ADMIN_PRIVATE_KEY);
+if(role==="admin"){
+   if(adminSecretkey !==ADMIN_PRIVATE_KEY){
       return res.status(403).json({
          success:false,
          message:"Invalid Admin Secret Key"
@@ -41,8 +49,14 @@ res.cookie("token",token,{
 });
 
 return res.status(201).json({
-   success:true,
-   message:"User registered successfully"
+    success: true,
+    message: "User registered successfully",
+    user: {
+        _id: createuser._id,
+        name: createuser.name,
+        email: createuser.email,
+        role: createuser.role
+    }
 });
 
 }catch(err){
@@ -63,7 +77,7 @@ const login=async (req,res)=>{
     const user=await User.findOne({email});
     if(!user){
        return res.status(404).json({
-            status:false,
+            success:false,
             message:"User not found"
         });
     }
@@ -74,7 +88,7 @@ const login=async (req,res)=>{
 );
 if(!isMatch){
    return res.status(401).json({
-    status:false,
+    success:false,
     message:"Invalid Credentials"
    })
 }
@@ -99,7 +113,8 @@ return res.status(200).json({
     message:"Login successful"
 });
   }catch(err){
- return res.status(404).json({
+    console.error("Login catch error:", err);
+    return res.status(500).json({
          success:false,
          message:"Internal Server Error"
       });
@@ -114,5 +129,28 @@ const logout=async(req,res)=>{
          message:"Logout Successfully"
       });
    
-}
-module.exports={signup,login,logout};
+};
+
+const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      user
+    });
+  } catch (err) {
+    console.log("Error in getMe:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error"
+    });
+  }
+};
+
+module.exports={signup,login,logout,getMe};

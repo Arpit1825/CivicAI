@@ -7,11 +7,11 @@ title:{
 },
 category:{
     type:String,
-    required:true
+    default:"Other"
 },
 imageUrl:{
     type:String,
-    required:true
+   default:""
 },
 aiSummary:{
     type:String
@@ -24,14 +24,20 @@ priorityScore:{
     type:Number,
     default:1
 },
+longitude:{
+    type:Number,
+    required:true
+},
 latitude:{
     type:Number,
     required:true
 
-},
-longitude:{
-    type:Number,
-    required:true
+},location: {
+  type: {
+    type: String,
+    default: "Point"
+  },
+  coordinates: [Number]
 },
 reportsCount:{
     type:Number,
@@ -54,5 +60,9 @@ createdBy:{
 }},{
     timestamps:true
 })
+
+issueSchema.index({
+    location: "2dsphere"
+});
 
 module.exports=mongoose.model("Issue",issueSchema);
