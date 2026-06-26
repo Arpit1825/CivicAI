@@ -18,24 +18,20 @@ connectDB();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "http://localhost:4173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  process.env.FRONTEND_URL,
 ];
-
-if (process.env.FRONTEND_URL) {
-  allowedOrigins.push(process.env.FRONTEND_URL);
-}
 
 app.use(
   cors({
-    origin(origin, callback) {
-      // Allow Postman / curl / server-to-server requests
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log("Blocked Origin:", origin);
+        callback(new Error("Not allowed by CORS"));
       }
-
-      callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
   })
