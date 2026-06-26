@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppProvider, useApp } from "./context/AppContext";
 
 import Layout from "./components/Layout";
+import Loader from "./components/Loader";
 
 // Public Pages
 import Home from "./pages/Home";
@@ -50,104 +51,118 @@ const PublicRoute = ({ children }) => {
   return children;
 };
 
+// 👇 New Component
+function AppRoutes() {
+  const { loading } = useApp();
+
+  // Premium Loader
+  if (loading) {
+    return <Loader />;
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+
+        {/* Landing */}
+        <Route path="/" element={<Home />} />
+
+        {/* Authentication */}
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <Signup />
+            </PublicRoute>
+          }
+        />
+
+        {/* Citizen */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/report-issue"
+          element={
+            <ProtectedRoute>
+              <ReportIssue />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-raised"
+          element={
+            <ProtectedRoute>
+              <MyRaisedIssues />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-supported"
+          element={
+            <ProtectedRoute>
+              <MySupportedIssues />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/nearby"
+          element={
+            <ProtectedRoute>
+              <MapView />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/issue/:id"
+          element={
+            <ProtectedRoute>
+              <IssueDetails />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 404 */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
 function App() {
   return (
     <AppProvider>
-      <BrowserRouter>
-        <Routes>
-
-          {/* Landing */}
-          <Route path="/" element={<Home />} />
-
-          {/* Authentication */}
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
-
-          <Route
-            path="/signup"
-            element={
-              <PublicRoute>
-                <Signup />
-              </PublicRoute>
-            }
-          />
-
-          {/* Citizen Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/report-issue"
-            element={
-              <ProtectedRoute>
-                <ReportIssue />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/my-raised"
-            element={
-              <ProtectedRoute>
-                <MyRaisedIssues />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/my-supported"
-            element={
-              <ProtectedRoute>
-                <MySupportedIssues />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/nearby"
-            element={
-              <ProtectedRoute>
-                <MapView />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/issue/:id"
-            element={
-              <ProtectedRoute>
-                <IssueDetails />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Admin */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute requireAdmin={true}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* 404 */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-
-        </Routes>
-      </BrowserRouter>
+      <AppRoutes />
     </AppProvider>
   );
 }

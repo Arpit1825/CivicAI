@@ -98,13 +98,16 @@ export default function InteractiveMap({
     }
 
     // Fix map display glitches on size resize
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       map.invalidateSize();
     }, 100);
 
     // Clean up
     return () => {
+      clearTimeout(timer);
       map.remove();
+      mapInstanceRef.current = null;
+      markerGroupRef.current = null;
     };
   }, []); // Run only once on mount
 
