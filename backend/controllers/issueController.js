@@ -1,4 +1,4 @@
-const Issue = require("../models/Issue");
+const Issue = require("../models/issue");
 const { analyzeIssue } = require("../services/geminiService");
 const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
