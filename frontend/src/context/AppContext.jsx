@@ -6,7 +6,11 @@ const AppContext = createContext();
 // Configure Axios Defaults
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
-
+console.log(
+  "API_BASE_URL =",
+  import.meta.env.VITE_API_URL,
+  axios.defaults.baseURL
+);
 // Category mapping helper
 const categoryMap = {
   'Road': 'potholes',

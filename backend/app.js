@@ -14,6 +14,14 @@ const issueRoutes=require('./routes/issueRoutes');
 const { analyzeIssue } = require("./services/geminiService");
 const dashboardRoutes=require('./routes/dashboardRoutes')
 
+// Validate critical environment variables
+const criticalEnvVars = ["MONGODB_URI", "JWT_SECRET", "FRONTEND_URL"];
+criticalEnvVars.forEach((varName) => {
+  if (!process.env[varName]) {
+    console.error(`CRITICAL WARNING: Environment variable "${varName}" is not set!`);
+  }
+});
+
 connectDB();
 
 const allowedOrigins = [

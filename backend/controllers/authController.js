@@ -6,6 +6,13 @@ const ADMIN_PRIVATE_KEY=process.env.ADMIN_PRIVATE_KEY;
 const signup= async (req,res)=>{
 const {name,email,password,role,adminSecretkey}=req.body;
 try{
+    if (!name || !email || !password) {
+        return res.status(400).json({
+            success: false,
+            message: "Name, email, and password are required"
+        });
+    }
+
     const user=await User.findOne({email})
 
 if(user){
@@ -36,6 +43,14 @@ let createuser = await User.create({
     name,email,password:hash,role
 })
 
+if (!JWT_SECRET) {
+    console.error("ERROR: JWT_SECRET is not configured. Cannot sign JWT token.");
+    return res.status(500).json({
+        success: false,
+        message: "Internal Server Error: Authentication configuration missing"
+    });
+}
+
 const token=jwt.sign({email:createuser.email,
     id:createuser._id},
     JWT_SECRET,{
@@ -44,7 +59,8 @@ const token=jwt.sign({email:createuser.email,
 
 res.cookie("token",token,{
     httpOnly:true,
-    secure:false,
+    secure:process.env.NODE_ENV === 'production',
+    sameSite:process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge:7*24*60*60*1000
 });
 
@@ -60,7 +76,7 @@ return res.status(201).json({
 });
 
 }catch(err){
-console.log("An error occured :",err);
+console.log("An error occured during signup:",err);
 
 return res.status(500).json({
     success:false,
@@ -72,7 +88,14 @@ return res.status(500).json({
 }
 const login=async (req,res)=>{
   try{
-  const {email,password}=req.body;
+    const {email,password}=req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({
+            success: false,
+            message: "Email and password are required"
+        });
+    }
 
     const user=await User.findOne({email});
     if(!user){
@@ -83,37 +106,46 @@ const login=async (req,res)=>{
     }
 
     const isMatch=await bcrypt.compare(
-    password,
-    user.password
-);
-if(!isMatch){
-   return res.status(401).json({
-    success:false,
-    message:"Invalid Credentials"
-   })
-}
+        password,
+        user.password
+    );
+    if(!isMatch){
+       return res.status(401).json({
+        success:false,
+        message:"Invalid Credentials"
+       })
+    }
 
-const token = jwt.sign(
-  {
-    id: user._id,
-    email: user.email,
-    role: user.role,
-  },
-  JWT_SECRET,
-  {
-    expiresIn: "7d",
-  }
-);
+    if (!JWT_SECRET) {
+        console.error("ERROR: JWT_SECRET is not configured. Cannot sign JWT token.");
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error: Authentication configuration missing"
+        });
+    }
 
-res.cookie("token",token,{
-    httpOnly:true,
-    secure:false,
-    maxAge:7*24*60*60*1000
-});
-return res.status(200).json({
-    success:true,
-    message:"Login successful"
-});
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+      },
+      JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    res.cookie("token",token,{
+        httpOnly:true,
+        secure:process.env.NODE_ENV === 'production',
+        sameSite:process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge:7*24*60*60*1000
+    });
+    return res.status(200).json({
+        success:true,
+        message:"Login successful"
+    });
   }catch(err){
     console.error("Login catch error:", err);
     return res.status(500).json({
