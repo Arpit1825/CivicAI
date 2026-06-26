@@ -39,7 +39,7 @@ export default function Hero() {
         {/* Subtitle */}
        <p className="text-slate-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
   Transform citizen reports into actionable insights using Google Gemini Vision. Upload an image,
-  detect the exact location, and let AI classNameify, prioritize, and streamline civic issue management.
+  detect the exact location, and let AI classify, prioritize, and streamline civic issue management.
 </p>
 
         {/* CTA Buttons */}
@@ -60,21 +60,6 @@ export default function Hero() {
         </div>
 
         {/* Sandbox Credentials */}
-        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 max-w-md mx-auto text-left shadow-xs">
-          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-2 text-center">
-            Experience the demo feature
-          </span>
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="p-2 border border-slate-100 bg-white rounded-lg">
-              <p className="font-bold text-slate-700">Citizen Profile</p>
-              <p className="text-slate-400 text-[10px] mt-0.5">citizen@example.com</p>
-            </div>
-            <div className="p-2 border border-slate-100 bg-white rounded-lg">
-              <p className="font-bold text-slate-700">Gov Official</p>
-              <p className="text-slate-400 text-[10px] mt-0.5">admin@civicai.gov</p>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
