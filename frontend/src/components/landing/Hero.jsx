@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Radar, ArrowRight } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export default function Hero() {
@@ -22,7 +22,7 @@ export default function Hero() {
       <div className="max-w-5xl mx-auto px-4 sm:px-8 text-center space-y-8 relative z-10">
         {/* Pill Badge */}
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
-          <Sparkles className="h-3 w-3 animate-spin-slow" />
+          <Radar className="h-3 w-3 animate-spin-slow" />
           <span>AI-Powered Civic Issue Reporting</span>
         </div>
 

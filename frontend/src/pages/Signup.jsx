@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { Sparkles, Mail, Lock, User, Shield, ArrowRight } from 'lucide-react';
+import { Radar, Mail, Lock, User, Shield, ArrowRight } from 'lucide-react';
 
 export default function Signup() {
   const { signup } = useApp();
@@ -51,7 +51,7 @@ export default function Signup() {
           {/* Logo */}
           <div className="flex items-center space-x-2.5 mb-8">
             <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <Sparkles className="h-5 w-5 text-white" />
+              <Radar className="h-5 w-5 text-white" />
             </div>
             <span className="text-2xl font-bold tracking-tight text-slate-900">Civic<span className="text-blue-600">AI</span></span>
           </div>
@@ -70,7 +70,7 @@ export default function Signup() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div>
-              <label for="name" className="block text-sm font-semibold text-slate-700">Full Name</label>
+              <label htmlFor="name" className="block text-sm font-semibold text-slate-700">Full Name</label>
               <div className="mt-1 relative rounded-md shadow-xs">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <User className="h-4 w-4 text-slate-400" />
@@ -87,7 +87,7 @@ export default function Signup() {
             </div>
 
             <div>
-              <label for="email" className="block text-sm font-semibold text-slate-700">Email Address</label>
+              <label htmlFor="email" className="block text-sm font-semibold text-slate-700">Email Address</label>
               <div className="mt-1 relative rounded-md shadow-xs">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-4 w-4 text-slate-400" />
@@ -104,7 +104,7 @@ export default function Signup() {
             </div>
 
             <div>
-              <label for="password" className="block text-sm font-semibold text-slate-700">Password</label>
+              <label htmlFor="password" className="block text-sm font-semibold text-slate-700">Password</label>
               <div className="mt-1 relative rounded-md shadow-xs">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-4 w-4 text-slate-400" />
@@ -193,11 +193,11 @@ export default function Signup() {
       </div>
 
       {/* Right side: SaaS Graphic Decoration Panel */}
-      <div className="hidden lg:flex lg:flex-1 bg-slate-900 items-center justify-center p-12 relative overflow-hidden bg-grid-dots">
+      <div className="hidden lg:flex lg:flex-1 bg-slate-900 items-center justify-center p-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-radial-gradient from-blue-600/20 to-transparent pointer-events-none"></div>
         <div className="max-w-md text-center text-white relative z-10">
           <div className="inline-flex p-3 rounded-full bg-blue-600/10 border border-blue-500/20 mb-6">
-            <Sparkles className="h-10 w-10 text-blue-500" />
+            <Radar className="h-10 w-10 text-blue-500" />
           </div>
           <h3 className="text-3xl font-extrabold tracking-tight">Active Citizen Contribution</h3>
           <p className="mt-4 text-slate-400 text-sm leading-relaxed">

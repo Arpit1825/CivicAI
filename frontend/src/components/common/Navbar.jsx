@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import {Radar, ArrowRight } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export default function Navbar() {
@@ -19,9 +19,9 @@ export default function Navbar() {
     <header className="bg-white/80 border-b border-slate-200/80 sticky top-0 backdrop-blur-md z-50 h-16 flex items-center px-4 sm:px-8 justify-between">
       {/* Logo */}
       <div className="flex items-center space-x-2">
-        <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center shadow-md">
-          <Sparkles className="h-5 w-5 text-white" />
-        </div>
+       <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center shadow-md">
+  <Radar className="h-5 w-5 text-white" />
+</div>
         <span className="text-xl font-bold tracking-tight text-slate-900">
           Civic<span className="text-blue-600">AI</span>
         </span>

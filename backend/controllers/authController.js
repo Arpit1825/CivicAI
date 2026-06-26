@@ -92,15 +92,17 @@ if(!isMatch){
     message:"Invalid Credentials"
    })
 }
-const token=jwt.sign(
-    {
-        email:user.email,
-        id:user._id
-    },
-    JWT_SECRET,
-    {
-        expiresIn:"7d"
-    }
+
+const token = jwt.sign(
+  {
+    id: user._id,
+    email: user.email,
+    role: user.role,
+  },
+  JWT_SECRET,
+  {
+    expiresIn: "7d",
+  }
 );
 
 res.cookie("token",token,{

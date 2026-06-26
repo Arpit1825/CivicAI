@@ -12,8 +12,8 @@ export default function StatusBadge({ type, value }) {
 
     const style = severityStyles[value] || 'bg-slate-50 text-slate-700 border-slate-200';
     return (
-      <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${style}`}>
-        <span class="w-1.5 h-1.5 rounded-full bg-current mr-1.5"></span>
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${style}`}>
+        <span className="w-1.5 h-1.5 rounded-full bg-current mr-1.5"></span>
         {value}
       </span>
     );
@@ -43,8 +43,8 @@ export default function StatusBadge({ type, value }) {
     const Icon = config.icon;
 
     return (
-      <span class={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${config.styles}`}>
-        <Icon class="h-3.5 w-3.5" />
+      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${config.styles}`}>
+        <Icon className="h-3.5 w-3.5" />
         <span>{value}</span>
       </span>
     );

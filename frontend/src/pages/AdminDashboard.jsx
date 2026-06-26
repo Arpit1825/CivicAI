@@ -247,7 +247,7 @@ export default function AdminDashboard() {
             <tbody className="divide-y divide-slate-100">
               {filteredIssues.length === 0 ? (
                 <tr>
-                  <td colspan="6" className="py-8 text-center text-xs text-slate-400">
+                  <td colSpan="6" className="py-8 text-center text-xs text-slate-400">
                     No tickets matching search query.
                   </td>
                 </tr>
@@ -301,7 +301,7 @@ export default function AdminDashboard() {
             <div className="space-y-4">
               <div className="flex justify-between items-center pb-3 border-b border-slate-100">
                 <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                  <FileText className="h-4.5 w-4.5 text-blue-600" /> Triage Control
+                  <FileText className="h-4.5 w-4.5 text-blue-600" /> Issue Status Panel
                 </h3>
                 <button 
                   onClick={() => setSelectedIssue(null)} 
@@ -352,7 +352,7 @@ export default function AdminDashboard() {
                     type="submit"
                     className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-md transition-colors"
                   >
-                    Update Triage Ticket
+                  Update Issue Status
                   </button>
                   <button
                     type="button"

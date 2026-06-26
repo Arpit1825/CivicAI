@@ -21,23 +21,23 @@ export default function MyRaisedIssues() {
   const tabs = ['All', 'Reported', 'Verified', 'In Progress', 'Resolved'];
 
   return (
-    <div class="space-y-6">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 class="text-xl font-bold text-slate-800">My Raised Issues</h2>
-          <p class="text-xs text-slate-400">Track the lifecycle of problems you have reported</p>
+          <h2 className="text-xl font-bold text-slate-800">My Raised Issues</h2>
+          <p className="text-xs text-slate-400">Track the lifecycle of problems you have reported</p>
         </div>
         <button
           onClick={() => navigate('/report-issue')}
-          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2.5 px-4 rounded-xl flex items-center gap-1.5 transition-all shadow-md"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2.5 px-4 rounded-xl flex items-center gap-1.5 transition-all shadow-md"
         >
-          <PlusCircle class="h-4 w-4" />Report Issue
+          <PlusCircle className="h-4 w-4" />Report Issue
         </button>
       </div>
 
       {/* Tabs */}
-      <div class="border-b border-slate-200">
-        <nav class="flex space-x-6 overflow-x-auto pb-px">
+      <div className="border-b border-slate-200">
+        <nav className="flex space-x-6 overflow-x-auto pb-px">
           {tabs.map((tab) => {
             const count = tab === 'All' 
               ? userIssues.length 
@@ -47,14 +47,14 @@ export default function MyRaisedIssues() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                class={`pb-3.5 text-sm font-semibold border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 ${
+                className={`pb-3.5 text-sm font-semibold border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 ${
                   activeTab === tab
                     ? 'border-blue-600 text-blue-600 font-bold'
                     : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300'
                 }`}
               >
                 <span>{tab}</span>
-                <span class={`text-[10px] px-2 py-0.5 rounded-full ${
+                <span className={`text-[10px] px-2 py-0.5 rounded-full ${
                   activeTab === tab ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'
                 }`}>
                   {count}
@@ -67,12 +67,12 @@ export default function MyRaisedIssues() {
 
       {/* Grid List */}
       {filteredIssues.length === 0 ? (
-        <div class="bg-white border border-slate-200/80 rounded-2xl p-12 text-center max-w-lg mx-auto shadow-xs">
-          <div class="h-12 w-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-4 border border-blue-100">
-            <AlertCircle class="h-6 w-6" />
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-12 text-center max-w-lg mx-auto shadow-xs">
+          <div className="h-12 w-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-4 border border-blue-100">
+            <AlertCircle className="h-6 w-6" />
           </div>
-          <h3 class="text-base font-bold text-slate-800">No issues found</h3>
-          <p class="text-xs text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
+          <h3 className="text-base font-bold text-slate-800">No issues found</h3>
+          <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
             {userIssues.length === 0 
               ? "You haven't reported any public issues yet. Start by creating your first civic report."
               : `You do not have any issues currently in status '${activeTab}'.`}
@@ -80,51 +80,51 @@ export default function MyRaisedIssues() {
           {userIssues.length === 0 && (
             <button
               onClick={() => navigate('/report')}
-              class="mt-5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2 px-4 rounded-xl shadow-md transition-colors"
+              className="mt-5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2 px-4 rounded-xl shadow-md transition-colors"
             >
               Report First Issue
             </button>
           )}
         </div>
       ) : (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredIssues.map((issue) => (
-            <div key={issue.id} class="bg-white border border-slate-200/80 rounded-2xl shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group">
+            <div key={issue.id} className="bg-white border border-slate-200/80 rounded-2xl shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group">
               {/* Image Banner */}
-              <div class="relative h-44 bg-slate-100 overflow-hidden">
+              <div className="relative h-44 bg-slate-100 overflow-hidden">
                 <img 
                   src={issue.image} 
                   alt={issue.title} 
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                 />
-                <div class="absolute top-3 left-3">
+                <div className="absolute top-3 left-3">
                   <StatusBadge type="status" value={issue.status} />
                 </div>
-                <div class="absolute top-3 right-3">
+                <div className="absolute top-3 right-3">
                   <StatusBadge type="severity" value={issue.severity} />
                 </div>
               </div>
 
               {/* Contents */}
-              <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div class="space-y-1.5">
-                  <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider capitalize">
+              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider capitalize">
                     {issue.category.replace('-', ' ')}
                   </span>
-                  <h3 class="text-sm font-bold text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-sm font-bold text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors">
                     {issue.title}
                   </h3>
-                  <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
                     {issue.description}
                   </p>
                 </div>
 
-                <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-slate-400 text-xs">
-                  <span class="flex items-center gap-1">
-                    <Calendar class="h-3.5 w-3.5" /> {issue.date}
+                <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-slate-400 text-xs">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="h-3.5 w-3.5" /> {issue.date}
                   </span>
-                  <span class="flex items-center gap-1 font-semibold text-slate-700 bg-slate-50 border border-slate-100 rounded-md py-1 px-2.5">
-                    <ThumbsUp class="h-3.5 w-3.5 text-blue-600" /> {issue.supportCount}
+                  <span className="flex items-center gap-1 font-semibold text-slate-700 bg-slate-50 border border-slate-100 rounded-md py-1 px-2.5">
+                    <ThumbsUp className="h-3.5 w-3.5 text-blue-600" /> {issue.supportCount}
                   </span>
                 </div>
               </div>
@@ -132,10 +132,10 @@ export default function MyRaisedIssues() {
               {/* Action Bottom */}
               <button
                 onClick={() => navigate(`/issue/${issue.id}`)}
-                class="w-full bg-slate-50/50 hover:bg-blue-600 hover:text-white border-t border-slate-100 py-3 text-center text-xs font-semibold text-slate-600 flex items-center justify-center gap-1 transition-all duration-200"
+                className="w-full bg-slate-50/50 hover:bg-blue-600 hover:text-white border-t border-slate-100 py-3 text-center text-xs font-semibold text-slate-600 flex items-center justify-center gap-1 transition-all duration-200"
               >
                 Track Timeline & Details
-                <ArrowRight class="h-3.5 w-3.5" />
+                <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
           ))}

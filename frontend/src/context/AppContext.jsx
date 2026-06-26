@@ -4,7 +4,7 @@ import axios from 'axios';
 const AppContext = createContext();
 
 // Configure Axios Defaults
-axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
 // Category mapping helper

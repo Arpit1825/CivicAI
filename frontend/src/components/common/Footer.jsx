@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
+import {Radar } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -12,7 +12,7 @@ export default function Footer() {
     <div>
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center">
-          <Sparkles className="h-5 w-5 text-white" />
+          <Radar className="h-5 w-5 text-white" />
         </div>
 
         <h2 className="text-2xl font-bold text-white">

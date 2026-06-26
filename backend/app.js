@@ -16,10 +16,30 @@ const dashboardRoutes=require('./routes/dashboardRoutes')
 
 connectDB();
 
-app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"],
-    credentials:true
-}));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:4173",
+];
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      // Allow Postman / curl / server-to-server requests
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -34,26 +54,25 @@ app.use("/api/issues",issueRoutes);
 
 
 
-app.get("/test-gemini", async(req,res)=>{
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "CivicAI Backend is running 🚀",
+    timestamp: new Date().toISOString(),
+  });
+});
 
-    try{
+app.get("/test-gemini", async (req, res) => {
+  try {
+    const result = await analyzeIssue(
+      "Huge pothole causing accidents on highway"
+    );
 
-        const result = await analyzeIssue(
-    "Huge pothole causing accidents on highway"
-);
-
-res.json(result);
-
-        // res.send(result);
-
-    }catch(err){
-
-        console.log(err);
-
-        res.status(500).send("Gemini Error");
-
-    }
-
+    res.json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Gemini Error");
+  }
 });
 app.get('/',(req,res)=>{
     res.send("CivicAI is running successfully");
