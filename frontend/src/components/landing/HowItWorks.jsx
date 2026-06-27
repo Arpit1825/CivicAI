@@ -1,38 +1,63 @@
 import React from 'react';
-import { Camera, Cpu, ListTodo, CheckCircle } from 'lucide-react';
+import { ListTodo, CheckCircle } from 'lucide-react';
+
+import {
+  Bot,
+  Camera,
+  Cpu,
+  MapPinned,
+  ShieldCheck,
+  Navigation,
+} from "lucide-react";
 
 const STEPS = [
   {
-    num: '01',
-    title: 'Report an Issue',
+    num: "01",
+    title: "AI Civic Assistant",
     description:
-      'Capture a photo of a civic issue such as a pothole, water leak, garbage dump, or broken streetlight and submit it with your current location.',
+      "Citizens can report issues naturally in English, Hindi, or Hinglish using our conversational AI assistant, which guides users step-by-step.",
+    icon: Bot,
+    color: "bg-cyan-500/10 text-cyan-600 border-cyan-500/20",
+  },
+  {
+    num: "02",
+    title: "Smart Issue Reporting",
+    description:
+      "Upload images, descriptions, and location data. The platform automatically collects geospatial information for accurate reporting.",
     icon: Camera,
-    color: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+    color: "bg-blue-500/10 text-blue-600 border-blue-500/20",
   },
   {
-    num: '02',
-    title: 'Gemini Vision Analysis',
+    num: "03",
+    title: "Gemini AI Analysis",
     description:
-      'Google Gemini Vision automatically analyzes the uploaded image, identifies the issue category, estimates severity, and generates an AI-powered summary.',
+      "Google Gemini analyzes uploaded content to generate issue category, severity level, priority score, and AI-powered summaries.",
     icon: Cpu,
-    color: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
+    color: "bg-purple-500/10 text-purple-600 border-purple-500/20",
   },
   {
-    num: '03',
-    title: 'Community & Authority Review',
+    num: "04",
+    title: "GIS & Community Validation",
     description:
-      'Citizens can support existing reports to prevent duplicates, while administrators verify and prioritize issues for resolution.',
-    icon: ListTodo,
-    color: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20',
+      "Issues are visualized on interactive maps while citizens and administrators collaborate to verify and prioritize incidents.",
+    icon: MapPinned,
+    color: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20",
   },
   {
-    num: '04',
-    title: 'Track Resolution',
+    num: "05",
+    title: "Administrative Review",
     description:
-      'Monitor issue progress from Reported to Verified, In Progress, and Resolved through real-time status updates.',
-    icon: CheckCircle,
-    color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+      "Authorities monitor analytics dashboards, manage incident status, and optimize civic response workflows.",
+    icon: ShieldCheck,
+    color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+  },
+  {
+    num: "06",
+    title: "Smart Navigation",
+    description:
+      "Built-in GPS navigation, route optimization, ETA calculation, and turn-by-turn guidance help officers reach incidents faster.",
+    icon: Navigation,
+    color: "bg-orange-500/10 text-orange-600 border-orange-500/20",
   },
 ];
 
@@ -43,21 +68,24 @@ export default function HowItWorks() {
       className="py-24 max-w-7xl mx-auto px-6 lg:px-8 space-y-16"
     >
       {/* Section Header */}
-      <div className="text-center space-y-2">
-        <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">
-          Workflow Lifecycle
-        </span>
-        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-          How CivicAI Works
-        </h2>
-       <p className="text-base text-slate-500 max-w-3xl mx-auto leading-relaxed">
-         From reporting a civic issue to AI-powered analysis, community validation,
-and administrative resolution, CivicAI streamlines the complete workflow.
-        </p>
-      </div>
+    <div className="text-center space-y-3">
+  <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">
+    Intelligent Civic Workflow
+  </span>
+
+  <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+    How CivicAI Transforms Civic Governance
+  </h2>
+
+  <p className="text-base text-slate-500 max-w-4xl mx-auto leading-relaxed">
+    From conversational issue reporting and Gemini AI analysis to GIS
+    intelligence, administrative decision-making, and smart navigation,
+    CivicAI streamlines the complete civic response lifecycle.
+  </p>
+</div>
 
       {/* Step Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {STEPS.map((step) => {
           const Icon = step.icon;
           return (
