@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import InteractiveMap from '../components/InteractiveMap';
@@ -23,9 +23,114 @@ export default function IssueDetails() {
 
   const issue = issues.find(i => i.id === id);
   const [commentText, setCommentText] = useState('');
+  const [address, setAddress] = useState("Loading location...");
+
+  const [navigationActive, setNavigationActive] = useState(false);
+  const [routeCoords, setRouteCoords] = useState(null);
+  const [navigationSteps, setNavigationSteps] = useState([]);
+  const [navMeta, setNavMeta] = useState({ distance: 0, duration: 0 });
+  const [navLoading, setNavLoading] = useState(false);
+  const [navError, setNavError] = useState("");
+
+  const handleGetDirections = () => {
+    setNavLoading(true);
+    setNavError("");
+    
+    if (!navigator.geolocation) {
+      setNavError("Geolocation is not supported by your browser.");
+      setNavLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        fetchRoute(latitude, longitude);
+      },
+      (error) => {
+        console.error(error);
+        setNavLoading(false);
+        setNavError("Could not retrieve your location. Please check browser permissions.");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  const fetchRoute = async (startLat, startLng) => {
+    try {
+      const response = await fetch(
+        `https://router.project-osrm.org/route/v1/driving/${startLng},${startLat};${issue.lng},${issue.lat}?overview=full&geometries=geojson&steps=true`
+      );
+      const data = await response.json();
+
+      if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+        const route = data.routes[0];
+        
+        // Convert [lng, lat] from OSRM to [lat, lng] for Leaflet
+        const coords = route.geometry.coordinates.map(c => [c[1], c[0]]);
+        setRouteCoords(coords);
+        
+        const steps = route.legs[0].steps.map(step => ({
+          instruction: step.maneuver.instruction,
+          distance: step.distance,
+          duration: step.duration
+        }));
+        
+        setNavigationSteps(steps);
+        setNavMeta({
+          distance: (route.distance / 1000).toFixed(1), // in km
+          duration: Math.round(route.duration / 60) // in minutes
+        });
+        setNavigationActive(true);
+      } else {
+        setNavError("No driving route found to this location.");
+      }
+    } catch (err) {
+      console.error(err);
+      setNavError("Failed to calculate route guide from server.");
+    } finally {
+      setNavLoading(false);
+    }
+  };
+
+  const handleResetRoute = () => {
+    setNavigationActive(false);
+    setRouteCoords(null);
+    setNavigationSteps([]);
+    setNavMeta({ distance: 0, duration: 0 });
+    setNavError("");
+  };
+
+  useEffect(() => {
+    if (!issue || !issue.lat || !issue.lng) return;
+
+    let isMounted = true;
+    
+    // Fetch reverse geocoding from OpenStreetMap Nominatim API
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${issue.lat}&lon=${issue.lng}`)
+      .then(res => res.json())
+      .then(data => {
+        if (isMounted) {
+          const displayName = data.display_name || data.name || `${issue.lat.toFixed(4)}, ${issue.lng.toFixed(4)}`;
+          // Format address nicely (take the first 3 parts of the display name)
+          const formattedAddress = displayName.split(',').slice(0, 3).join(',').trim();
+          setAddress(formattedAddress || `Civic Zone (${issue.lat.toFixed(4)}, ${issue.lng.toFixed(4)})`);
+        }
+      })
+      .catch(err => {
+        console.error("Reverse geocoding failed:", err);
+        if (isMounted) {
+          setAddress(`Civic Zone (${issue.lat.toFixed(4)}, ${issue.lng.toFixed(4)})`);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [issue]);
   const [comments, setComments] = useState([
-    { id: 1, author: 'Alexander Wright', text: 'This is getting worse every morning. Hope the crews get to Elm St fast.', date: '2026-06-21', role: 'citizen' },
-    { id: 2, author: 'Officer Ramirez', text: 'Road inspector has officially verified the report size. Queue priority updated.', date: '2026-06-22', role: 'admin' }
+    { id: 1, author: 'Ronny Singh', text: 'This is getting worse every morning. Hope the crews get to Elm St fast.', date: '2026-06-21', role: 'citizen' },
+    { id: 2, author: 'Officer Ram', text: 'Road inspector has officially verified the report size. Queue priority updated.', date: '2026-06-22', role: 'admin' }
   ]);
 
   if (!issue) {
@@ -58,7 +163,7 @@ export default function IssueDetails() {
 
     const newComment = {
       id: Date.now(),
-      author: currentUser?.className || 'Anonymous',
+      author: currentUser?.name || 'Anonymous',
       text: commentText,
       date: new Date().toISOString().split('T')[0],
       role: currentUser?.role || 'citizen'
@@ -106,13 +211,13 @@ export default function IssueDetails() {
               {/* Metadata rows */}
               <div className="flex flex-wrap items-center gap-y-4 gap-x-6 pb-5 border-b border-slate-100 text-xs text-slate-500">
                 <span className="flex items-center gap-1.5 font-semibold text-slate-700 bg-slate-50 border border-slate-100 rounded-md py-1.5 px-3">
-                  <User className="h-4 w-4 text-slate-400" /> Reporter: {issue.reporterclassName}
+                  <User className="h-4 w-4 text-slate-400" /> Reporter: {issue.reporterName}
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Calendar className="h-4 w-4 text-slate-400" /> Reported: {issue.date}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <MapPin className="h-4 w-4 text-slate-400" /> New York Met Area
+                  <MapPin className="h-4 w-4 text-slate-400" /> {address}
                 </span>
               </div>
 
@@ -149,19 +254,106 @@ export default function IssueDetails() {
           </div>
 
           {/* Location Map Pinpoint Card */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex flex-col h-[320px]">
-            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">Geographic Coordinates</h3>
-            <div className="flex-1 min-h-0 relative">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex flex-col">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Geographic Location</h3>
+              <a 
+                href={`https://www.google.com/maps/dir/?api=1&destination=${issue.lat},${issue.lng}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[10px] font-bold text-slate-600 hover:text-blue-600 flex items-center gap-1 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 px-2 py-1 rounded-lg transition-all cursor-pointer select-none"
+              >
+                External GPS Map
+              </a>
+            </div>
+
+            <div className="h-[300px] relative rounded-xl overflow-hidden border border-slate-100 mb-3">
               <InteractiveMap 
                 center={[issue.lat, issue.lng]}
                 zoom={15}
                 issues={[issue]}
                 readOnly={true}
                 selectedPosition={{ lat: issue.lat, lng: issue.lng }}
+                routeCoordinates={routeCoords}
               />
             </div>
-            <div className="mt-2 text-[10px] text-slate-400 font-medium">
-              📍 Lat: {issue.lat.toFixed(6)}, Lng: {issue.lng.toFixed(6)}
+            
+            <div className="flex justify-between items-center text-[10px] text-slate-400 font-medium mb-3">
+              <span>📍 Lat: {issue.lat.toFixed(6)}, Lng: {issue.lng.toFixed(6)}</span>
+              <span>OSM Navigator</span>
+            </div>
+
+            {/* Navigation controls */}
+            <div className="space-y-3">
+              {!navigationActive ? (
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <button
+                    onClick={handleGetDirections}
+                    disabled={navLoading}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-md shadow-blue-500/10"
+                  >
+                    {navLoading ? (
+                      <>
+                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Calculating Route...</span>
+                      </>
+                    ) : (
+                      <>
+                        <MapPin className="h-3.5 w-3.5" />
+                        <span>Start built-in Journey (Directions Guide)</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-4 space-y-3 animate-fadeIn text-left">
+                  <div className="flex justify-between items-center pb-2.5 border-b border-slate-200/50">
+                    <div>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Est. Driving Guide</span>
+                      <span className="text-sm font-black text-slate-800">
+                        🚗 {navMeta.distance} km &bull; {navMeta.duration} mins
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleResetRoute}
+                      className="text-[10px] font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100/80 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                    >
+                      Exit Navigation
+                    </button>
+                  </div>
+
+                  {/* Scrollable Navigation Steps */}
+                  <div className="max-h-[180px] overflow-y-auto space-y-2.5 pr-1">
+                    {navigationSteps.map((step, idx) => (
+                      <div key={idx} className="flex gap-2.5 text-xs text-left">
+                        <div className="flex flex-col items-center flex-shrink-0">
+                          <div className="h-5 w-5 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-[10px]">
+                            {idx + 1}
+                          </div>
+                          {idx < navigationSteps.length - 1 && (
+                            <div className="w-0.5 bg-slate-200 flex-1 my-1"></div>
+                          )}
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="font-semibold text-slate-700">{step.instruction}</p>
+                          <p className="text-[10px] text-slate-400 font-medium">
+                            {step.distance > 1000 
+                              ? `${(step.distance / 1000).toFixed(1)} km` 
+                              : `${Math.round(step.distance)} meters`
+                            } &bull; {Math.round(step.duration)} seconds
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {navError && (
+                <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600 text-left font-medium">
+                  ⚠️ {navError}
+                </div>
+              )}
             </div>
           </div>
 

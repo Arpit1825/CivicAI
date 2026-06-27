@@ -47,9 +47,11 @@ export default function ReportIssue() {
 
   // Form State
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
   const [rawFile, setRawFile] = useState(null);
   const [selectedPreset, setSelectedPreset] = useState(null);
+  const [prepopulatedAiResults, setPrepopulatedAiResults] = useState(null);
   
   // Location State
   const [lat, setLat] = useState(null);
@@ -120,6 +122,40 @@ export default function ReportIssue() {
   );
 };
 
+  // Load assistant draft if available
+  useEffect(() => {
+    const draftStr = sessionStorage.getItem('assistant_draft');
+    if (draftStr) {
+      try {
+        const draft = JSON.parse(draftStr);
+        if (draft.title) setTitle(draft.title);
+        if (draft.description) setDescription(draft.description);
+        if (draft.image) {
+          setImage(draft.image);
+          // Convert base64 image data back to File object
+          fetch(draft.image)
+            .then(res => res.blob())
+            .then(blob => {
+              const file = new File([blob], 'assistant_upload.jpg', { type: blob.type || 'image/jpeg' });
+              setRawFile(file);
+            })
+            .catch(err => console.error('Error restoring image file:', err));
+        }
+        if (draft.category && draft.severity) {
+          setPrepopulatedAiResults({
+            category: draft.category,
+            severity: draft.severity,
+            priority: draft.priority
+          });
+        }
+        // Remove it so it doesn't populate multiple times
+        sessionStorage.removeItem('assistant_draft');
+      } catch (e) {
+        console.error('Error loading assistant draft:', e);
+      }
+    }
+  }, []);
+
   // Set mock address when location changes
 useEffect(() => {
   if (!lat || !lng) return;
@@ -152,12 +188,20 @@ const submitForAI = async () => {
     const formData = new FormData();
 
     formData.append("title", title);
+    formData.append("description", description);
     formData.append("latitude", lat);
     formData.append("longitude", lng);
 
     if (rawFile) {
       formData.append("image", rawFile);
     }
+
+    if (prepopulatedAiResults) {
+      formData.append("category", prepopulatedAiResults.category);
+      formData.append("severity", prepopulatedAiResults.severity);
+      formData.append("skipAi", "true");
+    }
+
 const priorityMap = {
   Low: 30,
   Medium: 60,
@@ -169,7 +213,7 @@ const priorityMap = {
   setAiResults({
   category: response.issue.category,
   severity: response.issue.severity,
-  aiSummary: response.issue.aiSummary,
+  aiSummary: response.issue.aiSummary || response.issue.description,
   priorityScore: priorityMap[response.issue.severity] || 50,
 });
   } catch (err) {
@@ -305,6 +349,17 @@ const handleMapClick = (clickLat, clickLng) => {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Deep Pothole on Oak Ave intersection"
                   className="mt-1 block w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700">Description (Optional)</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Provide more context or details about the issue..."
+                  rows={4}
+                  className="mt-1 block w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
                 />
               </div>
 

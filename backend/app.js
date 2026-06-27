@@ -13,6 +13,7 @@ const authRoutes=require('./routes/authRoutes');
 const issueRoutes=require('./routes/issueRoutes');
 const { analyzeIssue } = require("./services/geminiService");
 const dashboardRoutes=require('./routes/dashboardRoutes')
+const assistantRoutes=require('./routes/assistantRoutes');
 
 // Validate critical environment variables
 const criticalEnvVars = ["MONGODB_URI", "JWT_SECRET", "FRONTEND_URL"];
@@ -55,6 +56,7 @@ app.use('/api/dashboard',dashboardRoutes);
 app.use("/api/auth",authRoutes);
 
 app.use("/api/issues",issueRoutes);
+app.use("/api/assistant",assistantRoutes);
 
 
 

@@ -10,9 +10,12 @@ const createIssue = async(req,res)=>{
 
         let {
             title,
+            description,
             category,
+            severity: reqSeverity,
             latitude,
-            longitude
+            longitude,
+            skipAi
         } = req.body;
         let imageUrl = "";
           
@@ -43,19 +46,24 @@ if(
 let severity = "Medium";
 let aiSummary = "";
 
-try{
+if (skipAi === "true" || skipAi === true) {
+    severity = reqSeverity || "Medium";
+    aiSummary = description || "Reported via CivicAI Assistant.";
+} else {
+    try{
 
-    const aiResult = await analyzeIssue(title, req.file ? req.file.buffer : null);
-    console.log(aiResult);
+        const aiResult = await analyzeIssue(title, req.file ? req.file.buffer : null);
+        console.log(aiResult);
 
-    category = aiResult.category;
-    severity = aiResult.severity;
-    aiSummary = aiResult.summary;
-    
-}catch(err){
+        category = aiResult.category;
+        severity = aiResult.severity;
+        aiSummary = aiResult.summary;
+        
+    }catch(err){
 
-    console.log("Gemini Error:", err);
+        console.log("Gemini Error:", err);
 
+    }
 }
 const existingIssue = await Issue.findOne({
    category,
@@ -100,6 +108,7 @@ else if(severity === "Critical") priorityScore = 4;
         
 const issue = await Issue.create({
     title,
+    description,
     category,
     latitude,
     longitude,

@@ -5,6 +5,10 @@ title:{
     type:String,
     required:true
 },
+description:{
+    type:String,
+    default:""
+},
 category:{
     type:String,
     default:"Other"

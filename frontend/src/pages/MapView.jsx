@@ -15,6 +15,7 @@ export default function MapView() {
   const [statusFilter, setStatusFilter] = useState('All');
   const [severityFilter, setSeverityFilter] = useState('All');
   const [filteredIssues, setFilteredIssues] = useState(issues);
+  const [focusedIssue, setFocusedIssue] = useState(null);
 
   // Sync and Filter
   useEffect(() => {
@@ -142,8 +143,12 @@ export default function MapView() {
             filteredIssues.map((issue) => (
               <div
                 key={issue.id}
-                onClick={() => navigate(`/issue/${issue.id}`)}
-                className="p-3 border border-slate-100 rounded-xl hover:border-blue-500/30 hover:bg-slate-50/50 cursor-pointer transition-all duration-200 text-left space-y-2 group"
+                onClick={() => setFocusedIssue(issue)}
+                className={`p-3 border rounded-xl hover:border-blue-500/30 hover:bg-slate-50/50 cursor-pointer transition-all duration-200 text-left space-y-2 group select-none ${
+                  focusedIssue?.id === issue.id 
+                    ? 'border-blue-500 bg-blue-50/20 ring-1 ring-blue-500/10' 
+                    : 'border-slate-100 bg-white'
+                }`}
               >
                 <div className="flex justify-between items-start">
                   <span className="text-[9px] font-bold text-blue-600 uppercase tracking-wider capitalize">
@@ -160,6 +165,23 @@ export default function MapView() {
                   </span>
                   <span className="font-semibold text-slate-600">{issue.supportCount} support</span>
                 </div>
+                
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100/50">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/issue/${issue.id}`);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded-lg transition-colors cursor-pointer"
+                  >
+                    View Details
+                  </button>
+                  {focusedIssue?.id === issue.id && (
+                    <span className="text-[9px] text-blue-600 font-semibold animate-pulse flex items-center gap-0.5">
+                      📍 Selected
+                    </span>
+                  )}
+                </div>
               </div>
             ))
           )}
@@ -169,7 +191,7 @@ export default function MapView() {
 
       {/* Right Map viewport */}
       <div className="flex-1 h-full min-h-[300px] relative z-10">
-        <InteractiveMap issues={filteredIssues} />
+        <InteractiveMap issues={filteredIssues} focusedIssue={focusedIssue} />
       </div>
 
     </div>

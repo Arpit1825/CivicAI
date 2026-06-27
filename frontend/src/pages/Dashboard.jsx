@@ -22,6 +22,27 @@ export default function Dashboard() {
   const score = getUserScore();
   const isAdmin = currentUser?.role === 'admin';
 
+  const [mapFilter, setMapFilter] = useState('all'); // 'all', 'critical', 'active', 'resolved'
+  const [focusedIssue, setFocusedIssue] = useState(null);
+
+  // Compute filtered issues for heatmap map
+  const filteredIssuesForMap = issues.filter(i => {
+    if (mapFilter === 'critical') {
+      return i.severity?.toLowerCase() === 'high' || i.severity?.toLowerCase() === 'critical';
+    }
+    if (mapFilter === 'active') {
+      return i.status?.toLowerCase() !== 'resolved';
+    }
+    if (mapFilter === 'resolved') {
+      return i.status?.toLowerCase() === 'resolved';
+    }
+    return true; // 'all'
+  });
+
+  const heatmapCriticalCount = issues.filter(i => i.severity?.toLowerCase() === 'high' || i.severity?.toLowerCase() === 'critical').length;
+  const heatmapActiveCount = issues.filter(i => i.status?.toLowerCase() !== 'resolved').length;
+  const heatmapResolvedCount = issues.filter(i => i.status?.toLowerCase() === 'resolved').length;
+
   // Compute Statistics
   const total = issues.length;
   const reported = issues.filter(i => i.status === 'Reported').length;
@@ -106,22 +127,116 @@ export default function Dashboard() {
         <div className="lg:col-span-2 space-y-6">
           
           {/* Map Widget */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex flex-col h-[350px] sm:h-[400px]">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-5">
               <div>
-                <h3 className="text-base font-bold text-slate-800">Local Incidents Map</h3>
-                <p className="text-xs text-slate-400">Visual mapping of all active civic reports</p>
+                <h3 className="text-base font-bold text-slate-800">
+                  Civic Incident Heatmap
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Geographic distribution of active civic reports
+                </p>
               </div>
-              <button 
-                onClick={() => navigate('/nearby')} 
-                className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-all cursor-pointer"
+
+              <button
+                onClick={() => navigate("/nearby")}
+                className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-all"
               >
-                View Nearby Issues
+                Explore Map
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
-            <div className="flex-1 min-h-0 relative">
-              <InteractiveMap issues={issues} />
+
+            {/* Stats Row */}
+            <div className="grid grid-cols-3 gap-3 mb-5">
+              <div 
+                onClick={() => setMapFilter(mapFilter === 'critical' ? 'all' : 'critical')}
+                className={`cursor-pointer rounded-xl p-3 transition-all duration-200 hover:scale-[1.02] flex flex-col justify-between select-none ${
+                  mapFilter === 'critical' 
+                    ? 'bg-red-100 border border-red-300 shadow-md shadow-red-500/5' 
+                    : 'bg-red-50 border border-red-100/80 hover:bg-red-100/50'
+                }`}
+              >
+                <p className="text-[10px] text-red-500 font-semibold uppercase">
+                  Critical
+                </p>
+                <p className="text-xl font-black text-red-700">
+                  {heatmapCriticalCount}
+                </p>
+              </div>
+
+              <div 
+                onClick={() => setMapFilter(mapFilter === 'active' ? 'all' : 'active')}
+                className={`cursor-pointer rounded-xl p-3 transition-all duration-200 hover:scale-[1.02] flex flex-col justify-between select-none ${
+                  mapFilter === 'active' 
+                    ? 'bg-amber-100 border border-amber-300 shadow-md shadow-amber-500/5' 
+                    : 'bg-amber-50 border border-amber-100/80 hover:bg-amber-100/50'
+                }`}
+              >
+                <p className="text-[10px] text-amber-500 font-semibold uppercase">
+                  Active
+                </p>
+                <p className="text-xl font-black text-amber-700">
+                  {heatmapActiveCount}
+                </p>
+              </div>
+
+              <div 
+                onClick={() => setMapFilter(mapFilter === 'resolved' ? 'all' : 'resolved')}
+                className={`cursor-pointer rounded-xl p-3 transition-all duration-200 hover:scale-[1.02] flex flex-col justify-between select-none ${
+                  mapFilter === 'resolved' 
+                    ? 'bg-emerald-100 border border-emerald-300 shadow-md shadow-emerald-500/5' 
+                    : 'bg-emerald-50 border border-emerald-100/80 hover:bg-emerald-100/50'
+                }`}
+              >
+                <p className="text-[10px] text-emerald-500 font-semibold uppercase">
+                  Resolved
+                </p>
+                <p className="text-xl font-black text-emerald-700">
+                  {heatmapResolvedCount}
+                </p>
+              </div>
+            </div>
+
+            {/* Active filter banner indicator */}
+            {mapFilter !== 'all' && (
+              <div className="flex items-center justify-between bg-slate-50 border border-slate-200/60 rounded-xl px-3.5 py-2 mb-4 text-xs text-slate-600 animate-fadeIn">
+                <span className="flex items-center gap-2 font-medium text-slate-700">
+                  <span className={`w-2 h-2 rounded-full ${
+                    mapFilter === 'critical' ? 'bg-red-500 animate-pulse' :
+                    mapFilter === 'active' ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'
+                  }`}></span>
+                  <span>
+                    Showing only <strong>{
+                      mapFilter === 'critical' ? 'Critical/High Severity' :
+                      mapFilter === 'active' ? 'Active' : 'Resolved'
+                    }</strong> issues ({filteredIssuesForMap.length} displayed)
+                  </span>
+                </span>
+                <button 
+                  onClick={() => setMapFilter('all')}
+                  className="text-blue-600 hover:text-blue-700 font-bold transition-colors cursor-pointer"
+                >
+                  Clear Filter
+                </button>
+              </div>
+            )}
+
+            {/* Map */}
+            <div className="relative h-[300px] rounded-xl overflow-hidden border border-slate-100">
+              <InteractiveMap issues={filteredIssuesForMap} focusedIssue={focusedIssue} />
+            </div>
+
+            {/* Footer */}
+            <div className="mt-4 flex justify-between text-xs text-slate-500">
+              <span>
+                📍 {filteredIssuesForMap.length} incidents mapped {mapFilter !== 'all' && `(filtered from ${issues.length})`}
+              </span>
+
+              <span className="font-medium text-blue-600">
+                Live Civic Intelligence
+              </span>
             </div>
           </div>
 
@@ -133,7 +248,7 @@ export default function Dashboard() {
                 <p className="text-xs text-slate-400">Latest active issues reported by citizens</p>
               </div>
               <button 
-                onClick={() => navigate(isAdmin ? '/admin' : '/raised')} 
+                onClick={() => navigate(isAdmin ? '/admin' : '/my-raised')} 
                 className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-all"
               >
                 View All
@@ -153,8 +268,8 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {issues.slice(0, 5).map((issue) => (
-                    <tr key={issue.id} className="hover:bg-slate-50/70 transition-colors">
+                  {filteredIssuesForMap.slice(0, 5).map((issue) => (
+                    <tr key={issue.id} className={`hover:bg-slate-50/70 transition-colors ${focusedIssue?.id === issue.id ? 'bg-blue-50/30' : ''}`}>
                       <td className="py-3.5 px-4 font-semibold text-slate-800 max-w-[200px] truncate">
                         <div className="flex flex-col">
                           <span className="truncate block text-sm font-semibold text-slate-800">{issue.title}</span>
@@ -171,12 +286,21 @@ export default function Dashboard() {
                         <StatusBadge type="status" value={issue.status} />
                       </td>
                       <td className="py-3.5 px-4 text-right">
-                        <button
-                          onClick={() => navigate(`/issue/${issue.id}`)}
-                          className="inline-flex items-center gap-1 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-xs font-semibold py-1.5 px-3 rounded-lg transition-all duration-200"
-                        >
-                          Details
-                        </button>
+                        <div className="flex justify-end items-center gap-2">
+                          <button
+                            onClick={() => setFocusedIssue(issue)}
+                            className="inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white text-xs font-semibold py-1.5 px-2.5 rounded-lg transition-all duration-200 cursor-pointer"
+                          >
+                            <MapPin className="h-3.5 w-3.5" />
+                            Locate
+                          </button>
+                          <button
+                            onClick={() => navigate(`/issue/${issue.id}`)}
+                            className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-1.5 px-2.5 rounded-lg transition-all duration-200"
+                          >
+                            Details
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -298,7 +422,7 @@ export default function Dashboard() {
             </p>
             <div className="mt-4 pt-3 border-t border-white/10 flex justify-between items-center text-xs font-bold">
               <span>Emergency Services</span>
-              <span className="bg-white text-blue-700 py-1 px-2.5 rounded-lg">911 / 311</span>
+              <span className="bg-white text-blue-700 py-1 px-2.5 rounded-lg">7052501218</span>
             </div>
           </div>
 

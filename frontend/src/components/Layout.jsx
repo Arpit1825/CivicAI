@@ -15,6 +15,7 @@ import {
   Award,
   Radar
 } from 'lucide-react';
+import FloatingChatbot from './assistant/FloatingChatbot';
 
 export default function Layout({ children }) {
   const { currentUser, logout, getUserScore } = useApp();
@@ -299,6 +300,7 @@ export default function Layout({ children }) {
           </div>
         </div>
       </div>
+      <FloatingChatbot />
     </div>
   );
 }

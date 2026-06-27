@@ -8,12 +8,17 @@ export default function InteractiveMap({
   zoom = 12, 
   onMapClick = null, 
   selectedPosition = null,
-  readOnly = false 
+  readOnly = false,
+  focusedIssue = null,
+  routeCoordinates = null
 }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markerGroupRef = useRef(null);
   const selectorMarkerRef = useRef(null);
+  const markersRef = useRef({});
+  const routeLayerRef = useRef(null);
+  const userMarkerRef = useRef(null);
   const navigate = useNavigate();
 
   // Create custom marker icon based on status
@@ -115,10 +120,11 @@ export default function InteractiveMap({
   useEffect(() => {
     const map = mapInstanceRef.current;
     const markerGroup = markerGroupRef.current;
-    if (!map || !markerGroup || readOnly) return;
+    if (!map || !markerGroup) return;
 
     // Clear previous markers
     markerGroup.clearLayers();
+    markersRef.current = {};
 
     // Add pins for all issues
     issues.forEach(issue => {
@@ -128,16 +134,18 @@ export default function InteractiveMap({
         icon: createCustomIcon(issue.status)
       });
 
+      markersRef.current[issue.id] = marker;
+
       // Custom popups that look like modern cards
       const popupContent = document.createElement('div');
       popupContent.className = 'p-2 w-48 font-sans';
       popupContent.innerHTML = `
-        <h4 className="font-bold text-slate-800 text-sm mb-1">${issue.title}</h4>
-        <div className="flex justify-between items-center text-xs text-slate-500 mb-2 capitalize">
+        <h4 class="font-bold text-slate-800 text-sm mb-1">${issue.title}</h4>
+        <div class="flex justify-between items-center text-xs text-slate-500 mb-2 capitalize">
           <span>${issue.category.replace('-', ' ')}</span>
-          <span className="font-semibold text-slate-700">${issue.status}</span>
+          <span class="font-semibold text-slate-700">${issue.status}</span>
         </div>
-        <button id="btn-${issue.id}" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-1.5 px-3 rounded-md transition-colors text-center block">
+        <button id="btn-${issue.id}" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-1.5 px-3 rounded-md transition-colors text-center block cursor-pointer">
           View Details
         </button>
       `;
@@ -158,7 +166,31 @@ export default function InteractiveMap({
       marker.addTo(markerGroup);
     });
 
-  }, [issues, readOnly]);
+    // Auto-fit map viewport to show the active pins
+    if (issues.length > 0) {
+      const validIssues = issues.filter(i => i.lat && i.lng);
+      if (validIssues.length > 0) {
+        const bounds = L.latLngBounds(validIssues.map(i => [i.lat, i.lng]));
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+      }
+    }
+
+  }, [issues]);
+
+  // Sync focused issue view
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !focusedIssue || !focusedIssue.lat || !focusedIssue.lng) return;
+
+    const pos = [focusedIssue.lat, focusedIssue.lng];
+    map.setView(pos, 15);
+
+    // Find the marker and open its popup
+    const marker = markersRef.current[focusedIssue.id];
+    if (marker) {
+      marker.openPopup();
+    }
+  }, [focusedIssue]);
 
   // Sync picker position
   useEffect(() => {
@@ -186,6 +218,55 @@ export default function InteractiveMap({
       }
     }
   }, [selectedPosition]);
+
+  // Draw polyline route if provided
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    // Clear previous route
+    if (routeLayerRef.current) {
+      routeLayerRef.current.remove();
+      routeLayerRef.current = null;
+    }
+
+    // Clear previous user marker
+    if (userMarkerRef.current) {
+      userMarkerRef.current.remove();
+      userMarkerRef.current = null;
+    }
+
+    if (routeCoordinates && routeCoordinates.length > 0) {
+      // Create polyline
+      const polyline = L.polyline(routeCoordinates, {
+        color: '#4f46e5', // Indigo
+        weight: 6,
+        opacity: 0.8,
+        lineJoin: 'round'
+      }).addTo(map);
+
+      routeLayerRef.current = polyline;
+
+      // Draw start marker (user location)
+      const startPoint = routeCoordinates[0];
+      const userIcon = L.divIcon({
+        html: `
+          <div class="relative flex items-center justify-center w-8 h-8">
+            <div class="absolute w-8 h-8 rounded-full bg-indigo-500/30 animate-pulse" style="animation-duration: 2s"></div>
+            <div class="w-4 h-4 rounded-full bg-indigo-600 border border-white shadow-md"></div>
+          </div>
+        `,
+        className: 'user-gps-icon',
+        iconSize: [32, 32],
+        iconAnchor: [16, 16]
+      });
+
+      userMarkerRef.current = L.marker(startPoint, { icon: userIcon }).addTo(map);
+
+      // Fit bounds to the route
+      map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+    }
+  }, [routeCoordinates]);
 
   return (
     <div className="relative w-full h-full border border-slate-200 shadow-inner rounded-xl overflow-hidden bg-slate-100">
