@@ -253,7 +253,11 @@ Navigation System
 ---
 # 🔄 End-to-End CivicAI Workflow
 
-![CivicAI Workflow](assets/diagrams/workflow.png)
+![CivicAI Workflow](frontend/assets/diagrams/civicai_workflow.png)
+
+#  CivicAI Achitecture Diagram
+
+![CivicAI Workflow](frontend/assets/diagrams/civicai_architecture.png)
 
 # 📸 Screenshots
 
