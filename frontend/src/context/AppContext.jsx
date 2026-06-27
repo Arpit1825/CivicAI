@@ -265,7 +265,7 @@ export const AppProvider = ({ children }) => {
       updateIssueStatus,
       getUserScore
     }}>
-      {!loading && children}
+      {children}
     </AppContext.Provider>
   );
 };
