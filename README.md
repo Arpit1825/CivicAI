@@ -251,6 +251,10 @@ Navigation System
 * Google Cloud Ecosystem
 
 ---
+# 🔄 End-to-End CivicAI Workflow
+
+![CivicAI Workflow](assets/diagrams/workflow.png)
+
 # 📸 Screenshots
 
 ## 🏠 Landing Page
