@@ -41,30 +41,6 @@ export default function Loader() {
 
   return (
     <div className="fixed inset-0 z-[9999] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 flex flex-col items-center justify-center overflow-hidden">
-
-      {/* Floating Background Particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        {Array.from({ length: 20 }).map((_, i) => {
-          const delay = i * 0.5;
-          const duration = 7 + (i % 5) * 2.5;
-          const left = (i * 6.7) % 100;
-          const size = 16 + (i % 5) * 8; // sizes range from 16px to 48px
-          return (
-            <div
-              key={i}
-              className="absolute bottom-0 border border-blue-400/35 bg-blue-500/5 rounded-full animate-float shadow-[inset_0_2px_4px_rgba(255,255,255,0.25),_0_0_8px_rgba(59,130,246,0.15)] backdrop-blur-[0.5px]"
-              style={{
-                left: `${left}%`,
-                width: `${size}px`,
-                height: `${size}px`,
-                animationDelay: `${delay}s`,
-                animationDuration: `${duration}s`,
-              }}
-            />
-          );
-        })}
-      </div>
-
       {/* Radar Sign Logo */}
       <div className="relative flex items-center justify-center w-24 h-24 mb-6">
         <div className="absolute w-24 h-24 rounded-full bg-blue-600/10 border border-blue-500/20 animate-pulse-slow"></div>
@@ -80,7 +56,7 @@ export default function Loader() {
       </h1>
 
       <p className="text-slate-400 mt-1.5 text-xs font-semibold uppercase tracking-wider">
-        Smart City Portal
+        Smart Civic Report Portal
       </p>
 
       {/* Progress Bar Line */}
@@ -127,10 +103,6 @@ export default function Loader() {
         🏅 Report • Support • Earn Points
       </div>
 
-      {/* Footer Info */}
-      <div className="absolute bottom-8 text-[10px] text-slate-600 font-semibold tracking-wider uppercase">
-        Powered by Gemini AI • Firebase • Atlas
-      </div>
     </div>
   );
 }

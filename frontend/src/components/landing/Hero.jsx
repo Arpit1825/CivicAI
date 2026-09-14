@@ -16,7 +16,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative bg-white border-b border-slate-200 py-16 sm:py-24 overflow-hidden bg-grid-dots">
+    <section className="relative bg-white border-b border-slate-200 py-16 sm:py-24 overflow-hidden ">
       <div className="absolute inset-0 bg-radial-gradient from-blue-600/5 to-transparent pointer-events-none" />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-8 text-center space-y-8 relative z-10">

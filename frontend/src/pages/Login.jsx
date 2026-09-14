@@ -31,9 +31,9 @@ export default function Login() {
 
   const handleQuickLogin = async (role) => {
     setError('');
-    const email = role === 'citizen' ? 'jane@example.com' : 'admin@civicai.gov';
-    const password = 'password123';
-    const name = role === 'citizen' ? 'Jane Doe' : 'Admin Officer';
+    const email = role === 'citizen' ? 'av682@gmail.com' : 'admin@civicai.gov';
+    const password = role === 'citizen' ? 'citizen_arpit': 'civicadminpov' ;
+    const name = role === 'citizen' ? 'Arpit Verma' : 'Admin Knp';
     
     try {
       const user = await login(email, password);
@@ -143,7 +143,7 @@ export default function Login() {
                 <User className="h-4 w-4 text-slate-500" />
                 <div className="text-left">
                   <p className="text-xs font-bold">Citizen Portal</p>
-                  <p className="text-[9px] text-slate-400">jane@gmail.com</p>
+                  <p className="text-[9px] text-slate-400">av682@gmail.com</p>
                 </div>
               </button>
               

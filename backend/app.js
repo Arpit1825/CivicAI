@@ -15,7 +15,7 @@ const { analyzeIssue } = require("./services/geminiService");
 const dashboardRoutes=require('./routes/dashboardRoutes')
 const assistantRoutes=require('./routes/assistantRoutes');
 
-// Validate critical environment variables
+// Validating environment variables
 const criticalEnvVars = ["MONGODB_URI", "JWT_SECRET", "FRONTEND_URL"];
 criticalEnvVars.forEach((varName) => {
   if (!process.env[varName]) {
@@ -63,7 +63,7 @@ app.use("/api/assistant",assistantRoutes);
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "CivicAI Backend is running 🚀",
+    message: "CivicAI Backend is running",
     timestamp: new Date().toISOString(),
   });
 });

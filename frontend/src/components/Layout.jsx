@@ -52,7 +52,7 @@ export default function Layout({ children }) {
    <div className="h-screen overflow-hidden bg-slate-50 flex">
       {/* Sidebar for Desktop */}
       <aside className="hidden lg:flex lg:flex-shrink-0 lg:w-64 bg-slate-900 border-r border-slate-800 flex-col text-slate-300">
-        {/* Brand Logo */}
+        
         <div className="h-16 flex items-center px-6 border-b border-slate-800">
           <Link to="/dashboard" className="flex items-center space-x-2.5">
             <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center shadow-md shadow-blue-500/25">
