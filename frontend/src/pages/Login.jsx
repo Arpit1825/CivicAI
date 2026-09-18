@@ -126,6 +126,18 @@ export default function Login() {
             </button>
           </form>
 
+{/* GOOGLE AUTH */}
+           {/* <div className="mt-5 relative flex py-2 items-center">
+              <div className="flex-grow border-t border-slate-200"></div>
+              <span className="flex-shrink mx-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Sign in with</span>
+              <div className="flex-grow border-t border-slate-200"></div>
+            </div>
+          <div className="bg-white-200 text-center mt-5 h-[60px] rounded-lg flex items-center justify-center border border-teal-900/30 hover:bg-gray-200/50">
+            Google
+          </div> */}
+
+
+
           {/* Quick Logins for Testing */}
           <div className="mt-8">
             <div className="relative flex py-2 items-center">
